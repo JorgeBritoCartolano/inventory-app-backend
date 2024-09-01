@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing Maven...
+      - mvn install -DskipTests
+  pre_build:
+    commands:
+      - echo Cleaning the project...
+      - mvn clean
+  build:
+    commands:
+      - echo Compiling the project...
+      - mvn package
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Zipping the artifacts...
+      - zip -r target/my-app.zip target/my-app.jar
+
+artifacts:
+  files:
+    - target/my-app.zip
