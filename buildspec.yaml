@@ -16,9 +16,7 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Zipping the artifacts...
-      - zip -r target/inventory-app.zip target/inventory-app-backend-1.0-SNAPSHOT.jar
 
 artifacts:
   files:
-    - target/inventory-app.zip
+    - target/*.jar
