@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +30,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testCreateProduct() {
+    public void whenCreateProduct_shouldCreateProductSuccessfully() {
         Product product = new Product();
         when(productRepository.save(product)).thenReturn(product);
 
@@ -39,7 +40,7 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testUpdateProduct() {
+    public void whenProductExists_shouldUpdateProductSuccessfully() {
         Long id = 1L;
         Product existingProduct = new Product();
         existingProduct.setId(id);
@@ -53,7 +54,21 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testDeleteProduct() {
+    public void whenProductDoesNotExist_shouldThrowNotFoundException() {
+        Long id = 1L;
+        Product productToUpdate = new Product();
+        productToUpdate.setId(id);
+
+        when(productRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(ResponseStatusException.class,
+                () -> productService.updateProduct(id, productToUpdate), "Expected ResponseStatusException to be thrown");
+
+        verify(productRepository, never()).save(productToUpdate);
+    }
+
+    @Test
+    public void whenDeleteProductExists_shouldDeleteProductSuccessfully() {
         Long id = 1L;
         when(productRepository.existsById(id)).thenReturn(true);
 
@@ -62,7 +77,20 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void testGetAllProducts() {
+    public void whenDeleteProductDoesNotExists_shouldThrowNotFoundException() {
+        Long id = 1L;
+
+        when(productRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(ResponseStatusException.class,
+                () ->
+            productService.deleteProduct(id), "Expected ResponseStatusException to be thrown");
+
+        verify(productRepository, never()).deleteById(id);
+    }
+
+    @Test
+    public void whenGetAllProducts_shouldReturnAllProducts() {
         Product product = new Product();
         when(productRepository.findAll()).thenReturn(List.of(product));
 
@@ -79,5 +107,14 @@ public class ProductServiceImplTest {
 
         Product foundProduct = productService.getProductById(id);
         assertNotNull(foundProduct);
+    }
+
+    @Test
+    public void whenGetProductByIdDoesNotExist_shouldThrowNotFoundException() {
+        when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class,
+                () ->
+            productService.getProductById(anyLong()), "Expected ResponseStatusException to be thrown");
     }
 }

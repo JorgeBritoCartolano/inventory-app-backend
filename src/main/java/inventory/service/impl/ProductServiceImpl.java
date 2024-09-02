@@ -5,7 +5,9 @@ import inventory.model.Product;
 import inventory.repository.ProductRepository;
 import inventory.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product updateProduct(Long id, Product product) {
         if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Product not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
         product.setId(id);
         return productRepository.save(product);
@@ -33,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Product not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
         productRepository.deleteById(id);
     }
@@ -46,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductById(Long id) {
         Optional<Product> product = productRepository.findById(id);
-        return product.orElseThrow(() -> new RuntimeException("Product not found"));
+        return product.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 }
 
