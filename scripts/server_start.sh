@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 cd /home/ec2-user/server/target
-sudo java -jar -Dserver.port=80 \
-    *.jar > /dev/null 2> /dev/null < /dev/null &
+nohup java -jar /home/ec2-user/server/target/inventory-app-backend-1.0-SNAPSHOT.jar > /home/ec2-user/server/application.log 2>&1 &
