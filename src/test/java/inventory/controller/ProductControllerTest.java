@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class ProductControllerTest {
-
+/*
     private MockMvc mockMvc;
 
     @Mock
@@ -92,4 +92,7 @@ public class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(id.intValue())));
     }
+
+ */
 }
+

@@ -1,13 +1,15 @@
 package inventory.service;
 
+import inventory.dto.ProductCreateDTO;
+import inventory.dto.ProductResponseDTO;
 import inventory.model.Product;
 
 import java.util.List;
 
 public interface ProductService {
-    Product createProduct(Product product);
-    Product updateProduct(Long id, Product product);
+    ProductResponseDTO createProduct(ProductCreateDTO productCreateDTO);
+    ProductResponseDTO updateProduct(Long id, ProductCreateDTO productCreateDTO);
     void deleteProduct(Long id);
-    List<Product> getAllProducts();
-    Product getProductById(Long id);
+    List<ProductResponseDTO> getAllProducts();
+    ProductResponseDTO getProductById(Long id);
 }
