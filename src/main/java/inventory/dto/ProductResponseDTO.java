@@ -1,31 +1,13 @@
-package inventory.model;
+package inventory.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "products")
-public class Product {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProductResponseDTO {
     private Long id;
-
-    @Column(nullable = false, length = 100)
     private String name;
-
-    @Column(length = 500)
     private String description;
-
-    @Column(nullable = false)
     private double price;
-
-    @Column(nullable = false)
     private int stock;
-
-    @Column(length = 50)
     private String category;
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -62,8 +44,8 @@ public class Product {
         return stock;
     }
 
-    public void setStock(int quantity) {
-        this.stock = quantity;
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 
     public String getCategory() {
