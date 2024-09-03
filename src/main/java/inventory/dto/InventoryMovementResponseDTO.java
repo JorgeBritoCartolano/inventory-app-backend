@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class InventoryMovementResponseDTO {
     private Long id;
+    private Long productId;
     private MovementTypeEnum movementType;
     private int quantity;
     private LocalDateTime createdAt;
@@ -47,5 +48,13 @@ public class InventoryMovementResponseDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 }

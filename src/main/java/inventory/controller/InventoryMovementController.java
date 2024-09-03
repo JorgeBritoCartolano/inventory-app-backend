@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/inventory-movement")
+@RequestMapping("/inventory-movements")
 public class InventoryMovementController {
 
     @Autowired
@@ -19,25 +19,21 @@ public class InventoryMovementController {
 
     @PostMapping("/entry")
     public ResponseEntity<InventoryMovementResponseDTO> registerEntry(@RequestBody InventoryMovementCreateDTO inventoryMovementCreateDTO) {
-        InventoryMovementResponseDTO inventoryMovementResponseDTO = inventoryMovementService.registerProductEntry(inventoryMovementCreateDTO);
-        return new ResponseEntity<>(inventoryMovementResponseDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(inventoryMovementService.registerProductEntry(inventoryMovementCreateDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/exit")
     public ResponseEntity<InventoryMovementResponseDTO> registerExit(@RequestBody InventoryMovementCreateDTO inventoryMovementCreateDTO) {
-        InventoryMovementResponseDTO inventoryMovementResponseDTO = inventoryMovementService.registerProductExit(inventoryMovementCreateDTO);
-        return new ResponseEntity<>(inventoryMovementResponseDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(inventoryMovementService.registerProductExit(inventoryMovementCreateDTO), HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<InventoryMovementResponseDTO>> getAllMovements() {
-        List<InventoryMovementResponseDTO> inventoryMovementResponseDTO = inventoryMovementService.getInventoryMovements();
-        return new ResponseEntity<>(inventoryMovementResponseDTO, HttpStatus.OK);
+        return new ResponseEntity<>(inventoryMovementService.getInventoryMovements(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<InventoryMovementResponseDTO> getMovementById(@PathVariable Long id) {
-        InventoryMovementResponseDTO inventoryMovementResponseDTO = inventoryMovementService.getInventoryMovementById(id);
-        return new ResponseEntity<>(inventoryMovementResponseDTO, HttpStatus.OK);
+        return new ResponseEntity<>(inventoryMovementService.getInventoryMovementById(id), HttpStatus.OK);
     }
 }

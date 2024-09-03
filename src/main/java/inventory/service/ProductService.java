@@ -2,7 +2,6 @@ package inventory.service;
 
 import inventory.dto.ProductCreateDTO;
 import inventory.dto.ProductResponseDTO;
-import inventory.model.Product;
 
 import java.util.List;
 
