@@ -23,6 +23,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDTO createProduct(ProductCreateDTO productCreateDTO) {
+        validatePriceAndStock(productCreateDTO.getPrice(), productCreateDTO.getStock());
         Product product = productRepository.save(ProductMapper.toEntity(productCreateDTO));
         return ProductMapper.toDTO(product);
     }
@@ -32,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
         if (!productRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
+        validatePriceAndStock(productCreateDTO.getPrice(), productCreateDTO.getStock());
 
         Product product = ProductMapper.toEntity(productCreateDTO);
         product.setId(id);
@@ -60,6 +62,15 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
         return ProductMapper.toDTO(product);
+    }
+
+    private void validatePriceAndStock(double price, int stock){
+        if(price < 0){
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Price must not be a negative number.");
+        }
+        if(stock < 0){
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Stock must not be a negative number.");
+        }
     }
 }
 
