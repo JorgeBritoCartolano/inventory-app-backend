@@ -34,6 +34,7 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
         productRepository
             .findById(inventoryMovement.getProductId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        validateQuantity(inventoryMovement.getQuantity());
 
         product.setStock(product.getStock() + inventoryMovement.getQuantity());
         productRepository.save(product);
@@ -55,6 +56,8 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
         productRepository
             .findById(inventoryMovement.getProductId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+        validateQuantity(inventoryMovement.getQuantity());
 
         if (product.getStock() < inventoryMovement.getQuantity()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Insufficient stock");
@@ -88,5 +91,11 @@ public class InventoryMovementServiceImpl implements InventoryMovementService {
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory movement not found"));
 
         return InventoryMovementMapper.toDTO(inventoryMovement);
+    }
+
+    private void validateQuantity(int quantity){
+        if(quantity < 0){
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Quantity must not be a negative number.");
+        }
     }
 }
