@@ -1,8 +1,15 @@
 package inventory.controller;
 
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import inventory.model.Product;
+import inventory.dto.ProductCreateDTO;
+import inventory.dto.ProductResponseDTO;
 import inventory.service.ProductService;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,87 +19,84 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 public class ProductControllerTest {
-/*
-    private MockMvc mockMvc;
 
-    @Mock
-    private ProductService productService;
+  private MockMvc mockMvc;
 
-    @InjectMocks
-    private ProductController productController;
+  @Mock private ProductService productService;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
-    }
+  @InjectMocks private ProductController productController;
 
-    @Test
-    public void testCreateProduct() throws Exception {
-        Product product = new Product();
-        when(productService.createProduct(any(Product.class))).thenReturn(product);
+  @BeforeEach
+  public void setUp() {
+    MockitoAnnotations.openMocks(this);
+    mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
+  }
 
-        mockMvc.perform(post("/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(product)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is(product.getName())));
-    }
+  @Test
+  public void testCreateProduct() throws Exception {
+    ProductResponseDTO responseDTO = new ProductResponseDTO();
+    ProductCreateDTO createDTO = new ProductCreateDTO();
 
-    @Test
-    public void testUpdateProduct() throws Exception {
-        Long id = 1L;
-        Product product = new Product();
-        product.setId(id);
-        when(productService.updateProduct(eq(id), any(Product.class))).thenReturn(product);
+    when(productService.createProduct(any(ProductCreateDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(put("/products/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(product)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(id.intValue())));
-    }
+    mockMvc
+        .perform(
+            post("/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(createDTO)))
+        .andExpect(status().isCreated())
+        .andExpect(content().json(new ObjectMapper().writeValueAsString(responseDTO)));
+  }
 
-    @Test
-    public void testDeleteProduct() throws Exception {
-        Long id = 1L;
+  @Test
+  public void testUpdateProduct() throws Exception {
+    Long id = 1L;
+    ProductResponseDTO responseDTO = new ProductResponseDTO();
+    ProductCreateDTO createDTO = new ProductCreateDTO();
 
-        mockMvc.perform(delete("/products/{id}", id))
-                .andExpect(status().isNoContent());
+    when(productService.updateProduct(eq(id), any(ProductCreateDTO.class))).thenReturn(responseDTO);
 
-        verify(productService).deleteProduct(id);
-    }
+    mockMvc
+        .perform(
+            put("/products/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(createDTO)))
+        .andExpect(status().isOk())
+        .andExpect(content().json(new ObjectMapper().writeValueAsString(responseDTO)));
+  }
 
-    @Test
-    public void testGetAllProducts() throws Exception {
-        Product product = new Product();
-        when(productService.getAllProducts()).thenReturn(List.of(product));
+  @Test
+  public void testDeleteProduct() throws Exception {
+    Long id = 1L;
 
-        mockMvc.perform(get("/products"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is(product.getName())));
-    }
+    mockMvc.perform(delete("/products/{id}", id)).andExpect(status().isNoContent());
 
-    @Test
-    public void testGetProductById() throws Exception {
-        Long id = 1L;
-        Product product = new Product();
-        product.setId(id);
-        when(productService.getProductById(id)).thenReturn(product);
+    verify(productService).deleteProduct(id);
+  }
 
-        mockMvc.perform(get("/products/{id}", id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(id.intValue())));
-    }
+  @Test
+  public void testGetAllProducts() throws Exception {
+    ProductResponseDTO products = new ProductResponseDTO();
+    List<ProductResponseDTO> responseDTO = Collections.singletonList(products);
 
- */
+    when(productService.getAllProducts()).thenReturn(responseDTO);
+
+    mockMvc
+        .perform(get("/products").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json(new ObjectMapper().writeValueAsString(responseDTO)));
+  }
+
+  @Test
+  public void testGetProductById() throws Exception {
+    ProductResponseDTO responseDTO = new ProductResponseDTO();
+
+    when(productService.getProductById(1L)).thenReturn(responseDTO);
+
+    mockMvc
+        .perform(get("/products/1").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json(new ObjectMapper().writeValueAsString(responseDTO)));
+  }
 }
-

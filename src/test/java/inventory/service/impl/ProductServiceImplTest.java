@@ -1,123 +1,181 @@
 package inventory.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import inventory.dto.ProductCreateDTO;
+import inventory.dto.ProductResponseDTO;
 import inventory.model.Product;
 import inventory.repository.ProductRepository;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.Mockito.*;
-
 public class ProductServiceImplTest {
-/*
-    @Mock
-    private ProductRepository productRepository;
 
-    @InjectMocks
-    private ProductServiceImpl productService;
+  @Mock private ProductRepository productRepository;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+  @InjectMocks private ProductServiceImpl productService;
 
-    @Test
-    public void whenCreateProduct_shouldCreateProductSuccessfully() {
-        Product product = new Product();
-        when(productRepository.save(product)).thenReturn(product);
+  @BeforeEach
+  public void setup() {
+    MockitoAnnotations.openMocks(this);
+  }
 
-        Product createdProduct = productService.createProduct(product);
-        assertNotNull(createdProduct);
-        verify(productRepository).save(product);
-    }
+  @Test
+  public void testCreateProduct_Success() {
+    ProductCreateDTO createDTO = new ProductCreateDTO();
+    createDTO.setPrice(10.0);
+    createDTO.setStock(100);
 
-    @Test
-    public void whenProductExists_shouldUpdateProductSuccessfully() {
-        Long id = 1L;
-        Product existingProduct = new Product();
-        existingProduct.setId(id);
-        when(productRepository.existsById(id)).thenReturn(true);
-        when(productRepository.save(existingProduct)).thenReturn(existingProduct);
+    Product mockProduct = new Product();
+    mockProduct.setId(1L);
+    mockProduct.setPrice(10.0);
+    mockProduct.setStock(100);
 
-        Product updatedProduct = productService.updateProduct(id, existingProduct);
-        assertNotNull(updatedProduct);
-        assertEquals(id, updatedProduct.getId());
-        verify(productRepository).save(existingProduct);
-    }
+    when(productRepository.save(any(Product.class))).thenReturn(mockProduct);
 
-    @Test
-    public void whenProductDoesNotExist_shouldThrowNotFoundException() {
-        Long id = 1L;
-        Product productToUpdate = new Product();
-        productToUpdate.setId(id);
+    ProductResponseDTO responseDTO = productService.createProduct(createDTO);
 
-        when(productRepository.existsById(id)).thenReturn(false);
+    verify(productRepository).save(any(Product.class));
 
-        assertThrows(ResponseStatusException.class,
-                () -> productService.updateProduct(id, productToUpdate), "Expected ResponseStatusException to be thrown");
+    assertEquals(mockProduct.getId(), responseDTO.getId());
+    assertEquals(mockProduct.getPrice(), responseDTO.getPrice());
+    assertEquals(mockProduct.getStock(), responseDTO.getStock());
+  }
 
-        verify(productRepository, never()).save(productToUpdate);
-    }
+  @Test
+  public void testCreateProduct_NegativePrice() {
+    ProductCreateDTO createDTO = new ProductCreateDTO();
+    createDTO.setPrice(-10.0);
+    createDTO.setStock(100);
 
-    @Test
-    public void whenDeleteProductExists_shouldDeleteProductSuccessfully() {
-        Long id = 1L;
-        when(productRepository.existsById(id)).thenReturn(true);
+    ResponseStatusException exception =
+        assertThrows(ResponseStatusException.class, () -> productService.createProduct(createDTO));
 
-        productService.deleteProduct(id);
-        verify(productRepository).deleteById(id);
-    }
+    assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, exception.getStatusCode());
+    assertEquals("Price must not be a negative number.", exception.getReason());
+  }
 
-    @Test
-    public void whenDeleteProductDoesNotExists_shouldThrowNotFoundException() {
-        Long id = 1L;
+  @Test
+  public void testCreateProduct_NegativeStock() {
+    ProductCreateDTO createDTO = new ProductCreateDTO();
+    createDTO.setPrice(10.0);
+    createDTO.setStock(-100);
 
-        when(productRepository.existsById(id)).thenReturn(false);
+    ResponseStatusException exception =
+        assertThrows(ResponseStatusException.class, () -> productService.createProduct(createDTO));
 
-        assertThrows(ResponseStatusException.class,
-                () ->
-            productService.deleteProduct(id), "Expected ResponseStatusException to be thrown");
+    assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, exception.getStatusCode());
+    assertEquals("Stock must not be a negative number.", exception.getReason());
+  }
 
-        verify(productRepository, never()).deleteById(id);
-    }
+  @Test
+  public void testUpdateProduct_Success() {
+    ProductCreateDTO updateDTO = new ProductCreateDTO();
+    updateDTO.setPrice(20.0);
+    updateDTO.setStock(50);
 
-    @Test
-    public void whenGetAllProducts_shouldReturnAllProducts() {
-        Product product = new Product();
-        when(productRepository.findAll()).thenReturn(List.of(product));
+    Product existingProduct = new Product();
+    existingProduct.setId(1L);
 
-        List<Product> products = productService.getAllProducts();
-        assertNotNull(products);
-        assertFalse(products.isEmpty());
-    }
+    when(productRepository.existsById(1L)).thenReturn(true);
+    when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
 
-    @Test
-    public void testGetProductById() {
-        Long id = 1L;
-        Product product = new Product();
-        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+    ProductResponseDTO responseDTO = productService.updateProduct(1L, updateDTO);
 
-        Product foundProduct = productService.getProductById(id);
-        assertNotNull(foundProduct);
-    }
+    verify(productRepository).save(any(Product.class));
 
-    @Test
-    public void whenGetProductByIdDoesNotExist_shouldThrowNotFoundException() {
-        when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
+    assertEquals(existingProduct.getId(), responseDTO.getId());
+    assertEquals(updateDTO.getPrice(), responseDTO.getPrice());
+    assertEquals(updateDTO.getStock(), responseDTO.getStock());
+  }
 
-        assertThrows(ResponseStatusException.class,
-                () ->
-            productService.getProductById(anyLong()), "Expected ResponseStatusException to be thrown");
-    }
+  @Test
+  public void testUpdateProduct_NotFound() {
+    ProductCreateDTO updateDTO = new ProductCreateDTO();
 
- */
+    when(productRepository.existsById(1L)).thenReturn(false);
+
+    ResponseStatusException exception =
+        assertThrows(
+            ResponseStatusException.class, () -> productService.updateProduct(1L, updateDTO));
+
+    assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    assertEquals("Product not found", exception.getReason());
+  }
+
+  @Test
+  public void testDeleteProduct_Success() {
+    when(productRepository.existsById(1L)).thenReturn(true);
+
+    productService.deleteProduct(1L);
+
+    verify(productRepository).deleteById(1L);
+  }
+
+  @Test
+  public void testDeleteProduct_NotFound() {
+    when(productRepository.existsById(1L)).thenReturn(false);
+
+    ResponseStatusException exception =
+        assertThrows(ResponseStatusException.class, () -> productService.deleteProduct(1L));
+
+    assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    assertEquals("Product not found", exception.getReason());
+  }
+
+  @Test
+  public void testGetAllProducts() {
+    Product product = new Product();
+    product.setId(1L);
+    product.setPrice(10.0);
+    product.setStock(100);
+
+    when(productRepository.findAll()).thenReturn(Collections.singletonList(product));
+
+    List<ProductResponseDTO> products = productService.getAllProducts();
+
+    assertEquals(1, products.size());
+    assertEquals(product.getId(), products.get(0).getId());
+    assertEquals(product.getPrice(), products.get(0).getPrice());
+    assertEquals(product.getStock(), products.get(0).getStock());
+  }
+
+  @Test
+  public void testGetProductById_Success() {
+    Product product = new Product();
+    product.setId(1L);
+    product.setPrice(10.0);
+    product.setStock(100);
+
+    when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+
+    ProductResponseDTO responseDTO = productService.getProductById(1L);
+
+    assertEquals(product.getId(), responseDTO.getId());
+    assertEquals(product.getPrice(), responseDTO.getPrice());
+    assertEquals(product.getStock(), responseDTO.getStock());
+  }
+
+  @Test
+  public void testGetProductById_NotFound() {
+    when(productRepository.findById(1L)).thenReturn(Optional.empty());
+
+    ResponseStatusException exception =
+        assertThrows(ResponseStatusException.class, () -> productService.getProductById(1L));
+
+    assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    assertEquals("Product not found", exception.getReason());
+  }
 }
-
