@@ -52,13 +52,14 @@ public class ReportServiceImpl implements ReportService {
         File.createTempFile(generateUniqueFileName("transactions/transaction-history"), ".csv");
 
     try (FileWriter writer = new FileWriter(reportFile)) {
-      writer.write("Movement ID, Product ID, Quantity, Date\n");
+      writer.write("Movement ID, Product ID, Movement Type, Quantity, Date\n");
       for (InventoryMovement movement : movements) {
         writer.write(
             String.format(
-                "%d, %d, %d, %s\n",
+                "%d, %d, %s, %d, %s\n",
                 movement.getId(),
                 movement.getProduct().getId(),
+                movement.getMovementType(),
                 movement.getQuantity(),
                 movement.getCreatedAt().toString()));
       }
