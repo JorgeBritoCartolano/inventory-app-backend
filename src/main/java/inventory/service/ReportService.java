@@ -5,6 +5,7 @@ import java.io.IOException;
 
 public interface ReportService {
 
-    File generateInventoryReport() throws IOException;
-    File generateTransactionHistoryReport() throws IOException;
+  File generateInventoryReport() throws IOException;
+
+  File generateTransactionHistoryReport() throws IOException;
 }
