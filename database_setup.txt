@@ -1,0 +1,26 @@
+-- Create database
+CREATE DATABASE inventory;
+
+-- Select database
+USE inventory;
+
+-- Create 'products' table
+CREATE TABLE products (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(500),
+    price DOUBLE NOT NULL,
+    stock INT NOT NULL,
+    category VARCHAR(50)
+);
+
+-- Create 'inventory_movements' table
+CREATE TABLE inventory_movements (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    product_id BIGINT NOT NULL,
+    movement_type ENUM('IN', 'OUT') NOT NULL,
+    quantity INT NOT NULL,
+    created_at DATETIME NOT NULL,
+    description VARCHAR(255),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
