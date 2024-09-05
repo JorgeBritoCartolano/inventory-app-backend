@@ -3,6 +3,7 @@ package inventory.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import inventory.dto.MovementTypeEnum;
 import inventory.model.InventoryMovement;
 import inventory.model.Product;
 import inventory.repository.InventoryMovementRepository;
@@ -64,6 +65,7 @@ public class ReportServiceImplTest {
     InventoryMovement movement = new InventoryMovement();
     movement.setId(1L);
     movement.setProduct(product);
+    movement.setMovementType(MovementTypeEnum.IN);
     movement.setQuantity(10);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
     movement.setCreatedAt(LocalDateTime.parse("2024-09-03 11:59:06.667175", formatter));
@@ -76,8 +78,8 @@ public class ReportServiceImplTest {
     List<String> lines = Files.readAllLines(report.toPath());
 
     assertEquals(2, lines.size()); // header + 1 movement
-    assertEquals("Movement ID, Product ID, Quantity, Date", lines.get(0));
-    assertEquals("1, 1, 10, 2024-09-03T11:59:06.667175", lines.get(1));
+    assertEquals("Movement ID, Product ID, Movement Type, Quantity, Date", lines.get(0));
+    assertEquals("1, 1, IN, 10, 2024-09-03T11:59:06.667175", lines.get(1));
 
     // Cleanup
     report.delete();
