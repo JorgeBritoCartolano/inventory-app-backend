@@ -1,0 +1,14 @@
+-- Install Java 17
+sudo yum install java-17-amazon-corretto
+
+-- Verify the installation
+java -version
+
+-- Install CodeDeploy Agent
+sudo yum update
+sudo yum install ruby
+sudo yum install wget
+cd /home/ec2-user
+wget https://aws-codedeploy-region-identifier.s3.region-identifier.amazonaws.com/latest/install
+chmod +x ./install
+sudo ./install auto
