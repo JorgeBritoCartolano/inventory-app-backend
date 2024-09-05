@@ -42,7 +42,7 @@ A comprehensive application designed for small businesses to manage their invent
 - Create an RDS MySQL instance.
 - Store credentials securely using AWS Secrets Manager.
 - Use a database management tool such as DBeaver to connect to the instance.
-- Create the database 'inventory' using the SQL commands provided in the `database_setup` file.
+- Create the database 'inventory' using the SQL commands provided in the `utilities/database_setup` file.
 
 ### 2. EC2 Instance Setup
 - Create an EC2 role with the following permissions:
@@ -50,7 +50,7 @@ A comprehensive application designed for small businesses to manage their invent
     - `AmazonS3FullAccess`
     - `SecretsManagerReadWrite`
 - Launch an EC2 instance, assign the created role, and connect via the console.
-- Install Java and the CodeDeploy agent on the EC2 instance. Use the commands provided in `instance_dependencies`.
+- Install Java and the CodeDeploy agent on the EC2 instance. Use the commands provided in `utilities/instance_dependencies`.
 - Add an inbound rule to allow traffic on port `8080` from any IP, and another rule to allow HTTP connections from any IP.
 
 ### 3. CI/CD Pipeline Setup
