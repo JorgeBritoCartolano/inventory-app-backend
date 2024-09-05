@@ -1,6 +1,6 @@
 package inventory.service.impl;
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -15,7 +15,7 @@ public class S3ServiceImpl implements S3Service {
 
     AmazonS3 s3 =
         AmazonS3ClientBuilder.standard()
-            .withCredentials(new ProfileCredentialsProvider())
+            .withCredentials(new DefaultAWSCredentialsProviderChain())
             .withRegion(Regions.EU_WEST_3)
             .build();
 
